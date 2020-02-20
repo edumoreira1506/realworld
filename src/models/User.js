@@ -1,5 +1,5 @@
 const UserSchema = require('../schemas/UserSchema');
-const { hasNumber, hasUpperCase, encrypt } = require('../helpers/string');
+const { hasNumber, hasUpperCase, encrypt, decrypt } = require('../helpers/string');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 const usernameCharacters = {
@@ -22,7 +22,8 @@ const store = async (user, callback) => {
 
   const serializedUser = serializeUser({
     ...user,
-    token: generateToken(user)
+    token: generateToken(user),
+    password: encrypt(user.password)
   });
 
   return persist(serializedUser, callback);
@@ -78,6 +79,19 @@ const update = async (id, token, newProps, callback) => {
   }
 
   return callback.onNotAllowed();
+}
+
+const login = async (email, password, callback) => {
+  if (!email || !password) return callback.onUnauthorized();
+
+  const user = await findByEmail(email);
+
+  if (!user) return callback.onUnauthorized();
+  
+  const decryptedPassword = decrypt(user.password);
+
+  if (decryptedPassword === password) return callback.onAuthorized(user);
+  return callback.onUnauthorized();
 }
 
 const isSameToken = (user1, user2) => user1.token === user2.token;
@@ -138,5 +152,6 @@ module.exports = {
   store,
   remove,
   find,
-  update
+  update,
+  login
 }

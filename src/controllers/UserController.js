@@ -103,9 +103,29 @@ const update = (req, res) => {
   });
 }
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.login(email, password, {
+    onAuthorized: user => {
+      res.send({
+        ok: true,
+        user
+      })
+    },
+    onUnauthorized: () => {
+      res.send({
+        ok: false,
+        message: 'Username or password invalid'
+      })
+    }
+  })
+}
+
 module.exports = {
   store,
   remove,
   show,
-  update
+  update,
+  login
 }
