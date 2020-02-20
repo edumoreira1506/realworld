@@ -1,6 +1,7 @@
 const User = require('./User');
 const Post = require('./Post');
 const CommentSchema = require('../schemas/CommentSchema');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const store = async (token, comment, postId, callback) => {
   const user = await User.findByToken(token);
@@ -14,6 +15,33 @@ const store = async (token, comment, postId, callback) => {
 
   return persist(serializedComment, callback);
 }
+
+const find = async (id, callback) => {
+  const post = await Post.findById(id);
+
+  if (!post) return callback.onNotFound();
+
+  const comments = await findByPost(post);
+
+  return callback.onFind(await withUser(comments));
+}
+
+const withUser = async (comments) => await Promise.all(comments.map(async (comment) => {
+  const user = await User.findById(comment.user);
+
+  return {
+    content: comment.content,
+    createdAt: comment.createdAt,
+    updatedAt: comment.updatedAt,
+    user: {
+      image: user.image,
+      username: user.username
+    }
+  }
+}));
+
+const findByPost = async (post) =>
+  await CommentSchema.find({ post: new ObjectId(post._id) });
 
 const serializeComment = (comment, user, post) => ({
   content: comment.content,
@@ -29,5 +57,6 @@ const persist = async (comment, callback) =>
 const hasRequiredFields = comment => Boolean(comment.content);
 
 module.exports = {
-  store
+  store,
+  find
 }

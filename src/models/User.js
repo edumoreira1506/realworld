@@ -186,5 +186,6 @@ module.exports = {
   update,
   login,
   follow,
-  findByToken
+  findByToken,
+  findById
 }

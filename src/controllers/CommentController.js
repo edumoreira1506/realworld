@@ -27,6 +27,26 @@ const store = (req, res) => {
   });
 }
 
+const show = (req, res) => {
+  const { id } = req.params;
+
+  return Comment.find(id, {
+    onFind: comments => {
+      res.send({
+        ok: true,
+        comments
+      }).status(200)
+    },
+    onNotFound: () => {
+      res.send({
+        ok: false,
+        message: 'Not found'
+      }).status(404)
+    }
+  });
+}
+
 module.exports = {
-  store
+  store,
+  show
 }

@@ -23,5 +23,6 @@ routes.delete('/post/:id', PostController.remove)
 routes.patch('/post/:id', PostController.update)
 
 routes.post('/post/:id/comment', CommentController.store)
+routes.get('/post/:id/comment', CommentController.show)
 
 module.exports = routes
