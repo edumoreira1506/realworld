@@ -54,6 +54,32 @@ const find = async (id, callback) => {
   return callback.onNotFound();
 }
 
+const update = async (id, token, newProps, callback) => {
+  const userToken = await findByToken(token);
+  const userId = await findById(id);
+
+  if (!userId) return callback.onNotFound();
+  if (!userToken) return callback.onError('Invalid token');
+  if (isSameToken(userToken, userId)) {
+    if (newProps.hasOwnProperty('email'))
+      if (await isEmailDuplicated(newProps)) return callback.onError('Duplicated email');
+    
+    if (newProps.hasOwnProperty('username')) {
+      if (await isUsernameDuplicated(newProps)) return callback.onError('Duplicated username');
+      if (!isUsernameValid(newProps)) return callback.onError(`Username needs to have between ${usernameCharacters.min} and ${usernameCharacters.max} characters`);
+    }
+
+    if (newProps.hasOwnProperty('password')) {
+      if (newProps.password !== newProps.confirmPassword) return callback.onError('Password and confirm password are differents');
+      if (!isValidPassword(newProps)) return callback.onError(`Password must have between ${passwordCharacters.min} and ${passwordCharacters.max}, a number and a uppercase letter`);
+    }
+
+    return await editById(id, newProps, callback);
+  }
+
+  return callback.onNotAllowed();
+}
+
 const isSameToken = (user1, user2) => user1.token === user2.token;
 
 const generateToken = ({ username, password, email }) =>
@@ -75,6 +101,12 @@ const findByToken = async (token) => await UserSchema.findOne({ token });
 const findByUsername = async (username) => await UserSchema.findOne({ username });
 
 const findById = async (id) => await UserSchema.findOne({ _id: new ObjectId(id) });
+
+const editById = async (id, newProps, callback) => await UserSchema.updateOne({
+  _id: new ObjectId(id)
+}, newProps, error => 
+  error ? callback.onError(error) : callback.onUpdated()
+);
 
 const isUsernameValid = username => (
   username.length >= usernameCharacters.min &&
@@ -105,5 +137,6 @@ const deleteById = async (id, callback) => await UserSchema.deleteOne({
 module.exports = {
   store,
   remove,
-  find
+  find,
+  update
 }

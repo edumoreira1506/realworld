@@ -10,5 +10,6 @@ routes.get('/', MainController.index)
 routes.post('/user', UserController.store)
 routes.get('/user/:id', UserController.show)
 routes.delete('/user/:id', UserController.remove)
+routes.patch('/user/:id', UserController.update)
 
 module.exports = routes

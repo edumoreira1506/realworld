@@ -70,8 +70,42 @@ const show = (req, res) => {
   });
 }
 
+const update = (req, res) => {
+  const { id } = req.params;
+  const token = req.header('Authorization');
+  const newProps = req.body;
+
+  return User.update(id, token, newProps, {
+    onUpdated: () => {
+      res.send({
+        ok: true,
+        message: 'Success!'
+      }).status(204);
+    },
+    onNotAllowed: () => {
+      res.send({
+        ok: false,
+        message: 'Not allowed'
+      }).status(401);
+    },
+    onNotFound: () => {
+      res.send({
+        ok: false,
+        message: 'Not found'
+      }).status(404)
+    },
+    onError: message => {
+      res.send({
+        ok: false,
+        message
+      }).status(400)
+    }
+  });
+}
+
 module.exports = {
   store,
   remove,
-  show
+  show,
+  update
 }
