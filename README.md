@@ -26,3 +26,8 @@ Install all packages and run.
 $ yarn
 $ yarn start
 ```
+
+Run lint.
+```console
+$ yarn lint
+```
