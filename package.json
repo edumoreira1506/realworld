@@ -1,8 +1,8 @@
 {
-  "name": "realworld",
+  "name": "realworld-api",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:edumoreira1506/realworld.git",
+  "repository": "git@github.com:edumoreira1506/realworld-api.git",
   "author": "Eduardo Moreira <contato@eduardoem.com.br>",
   "license": "MIT",
   "scripts": {
