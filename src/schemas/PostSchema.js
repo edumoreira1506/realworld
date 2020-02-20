@@ -12,7 +12,11 @@ const PostSchema = new Schema({
   content: {
     type: String,
     require: true
-  }
+  },
+  favorites: [{
+    type: Schema.Types.ObjectId,
+		ref: 'User'
+  }]
 }, {
 	timestamps: true
 })
