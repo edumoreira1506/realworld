@@ -14,4 +14,6 @@ routes.patch('/user/:id', UserController.update)
 
 routes.post('/auth', UserController.login)
 
+routes.post('/user/:id/follow', UserController.follow)
+
 module.exports = routes
