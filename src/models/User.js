@@ -1,5 +1,6 @@
 const UserSchema = require('../schemas/UserSchema');
 const { hasNumber, hasUpperCase, encrypt } = require('../helpers/string');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const usernameCharacters = {
   min: 5,
@@ -20,12 +21,25 @@ const store = async (user, callback) => {
   if (!isValidPassword(user.password)) return callback.onError(`Password must have between ${passwordCharacters.min} and ${passwordCharacters.max}, a number and a uppercase letter`);
 
   const serializedUser = serializeUser({
-    user,
+    ...user,
     token: generateToken(user)
   });
 
   return persist(serializedUser, callback);
 };
+
+const remove = async (id, token, callback) => {
+  const userToken = await findByToken(token);
+  const userId = await findById(id);
+
+  if (!userId) return callback.onNotFound();
+  if (!userToken) return callback.onError('Invalid token');
+  if (isSameToken(userToken, userId)) return await deleteById(id, callback);
+
+  return callback.onNotAllowed();
+}
+
+const isSameToken = (user1, user2) => user1.token === user2.token;
 
 const generateToken = ({ username, password, email }) =>
   encrypt(`email:${email}|username:${username}|password:${password}`);
@@ -41,7 +55,11 @@ const isEmailDuplicated = async (email) => Boolean(await findByEmail(email));
 
 const findByEmail = async (email) => await UserSchema.findOne({ email });
 
+const findByToken = async (token) => await UserSchema.findOne({ token });
+
 const findByUsername = async (username) => await UserSchema.findOne({ username });
+
+const findById = async (id) => await UserSchema.findOne({ _id: new ObjectId(id) });
 
 const isUsernameValid = username => (
   username.length >= usernameCharacters.min &&
@@ -65,6 +83,11 @@ const persist = async (user, callback) =>
     error ? callback.onError(error) : callback.onStored(small)
   );
 
+const deleteById = async (id, callback) => await UserSchema.deleteOne({
+  _id: new ObjectId(id)
+}, error => error ? callback.onError(error) : callback.onDeleted());
+
 module.exports = {
-  store
+  store,
+  remove
 }
