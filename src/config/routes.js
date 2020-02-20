@@ -1,9 +1,17 @@
 const express = require('express')
 
-const HelloController = require('../controllers/HelloController')
+const MainController = require('../controllers/MainController')
+const UserController = require('../controllers/UserController')
 
 const routes = express.Router()
 
-routes.get('/', HelloController.index)
+routes.get('/', MainController.index)
+
+routes.post('/user', UserController.store)
+routes.get('/user/:id', UserController.show)
+routes.delete('/user/:id', UserController.remove)
+routes.patch('/user/:id', UserController.update)
+
+routes.post('/auth', UserController.login)
 
 module.exports = routes
