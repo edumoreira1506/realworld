@@ -51,7 +51,27 @@ const remove = (req, res) => {
   });
 }
 
+const show = (req, res) => {
+  const { id } = req.params;
+
+  return User.find(id, {
+    onFind: user => {
+      res.send({
+        ok: true,
+        user
+      }).status(200)
+    },
+    onNotFound: () => {
+      res.send({
+        ok: false,
+        message: 'Not found'
+      }).status(404)
+    }
+  });
+}
+
 module.exports = {
   store,
-  remove
+  remove,
+  show
 }

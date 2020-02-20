@@ -39,6 +39,21 @@ const remove = async (id, token, callback) => {
   return callback.onNotAllowed();
 }
 
+const find = async (id, callback) => {
+  const user = await findById(id);
+
+  if (user) return callback.onFind({
+    email: user.email,
+    username: user.username,
+    image: user.image,
+    bio: user.bio,
+    updatedAt: user.updatedAt,
+    createdAt: user.createdAt
+  })
+
+  return callback.onNotFound();
+}
+
 const isSameToken = (user1, user2) => user1.token === user2.token;
 
 const generateToken = ({ username, password, email }) =>
@@ -89,5 +104,6 @@ const deleteById = async (id, callback) => await UserSchema.deleteOne({
 
 module.exports = {
   store,
-  remove
+  remove,
+  find
 }
