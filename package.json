@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon app",
-    "start:heroku": "node index"
+    "start:heroku": "node index",
+    "lint": "eslint src"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -15,5 +16,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.9.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
   }
 }
