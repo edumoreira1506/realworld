@@ -26,6 +26,23 @@ const find = async (id, callback) => {
   return callback.onNotFound();
 }
 
+const remove = async (id, token, callback) => {
+  const userToken = await User.findByToken(token);
+  const post = await findById(id);
+
+  if (!post) return callback.onNotFound();
+  if (!userToken) return callback.onError('Invalid token');
+  if (belongsTo(post, userToken)) return await deleteById(id, callback);
+
+  return callback.onNotAllowed();
+}
+
+const belongsTo = (post, user) => post.user.toString() === user._id.toString();
+
+const deleteById = async (id, callback) => await PostSchema.deleteOne({
+  _id: new ObjectId(id)
+}, error => error ? callback.onError(error) : callback.onDeleted());
+
 const serializePost = (post, user) => ({
   title: post.title,
   content: post.content,
@@ -45,5 +62,6 @@ const persist = async (post, callback) =>
 
 module.exports = {
   store,
-  find
+  find,
+  remove
 }

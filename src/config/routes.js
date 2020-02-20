@@ -19,5 +19,6 @@ routes.post('/user/:id/follow', UserController.follow)
 
 routes.post('/post', PostController.store)
 routes.get('/post/:id', PostController.show)
+routes.delete('/post/:id', PostController.remove)
 
 module.exports = routes
