@@ -1,9 +1,9 @@
-require('dotenv').config();
 
+const { dbUrl } = require('./constants');
 const mongoose = require('mongoose');
 const dbConfig = {
   useNewUrlParser: true,
   useUnifiedTopology: true
 };
 
-mongoose.connect(process.env.DB_URL, dbConfig);
+mongoose.connect(dbUrl, dbConfig);

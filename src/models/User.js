@@ -64,15 +64,15 @@ const update = async (id, token, newProps, callback) => {
   if (!userId) return callback.onNotFound();
   if (!userToken) return callback.onError('Invalid token');
   if (isSameToken(userToken, userId)) {
-    if (newProps.hasOwnProperty('email'))
+    if (Object.prototype.hasOwnProperty.call(newProps, 'email'))
       if (await isEmailDuplicated(newProps)) return callback.onError('Duplicated email');
     
-    if (newProps.hasOwnProperty('username')) {
+    if (Object.prototype.hasOwnProperty.call(newProps, 'username')) {
       if (await isUsernameDuplicated(newProps)) return callback.onError('Duplicated username');
       if (!isUsernameValid(newProps)) return callback.onError(`Username needs to have between ${usernameCharacters.min} and ${usernameCharacters.max} characters`);
     }
 
-    if (newProps.hasOwnProperty('password')) {
+    if (Object.prototype.hasOwnProperty.call(newProps, 'password')) {
       if (newProps.password !== newProps.confirmPassword) return callback.onError('Password and confirm password are differents');
       if (!isValidPassword(newProps)) return callback.onError(`Password must have between ${passwordCharacters.min} and ${passwordCharacters.max}, a number and a uppercase letter`);
     }
