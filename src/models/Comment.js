@@ -40,8 +40,25 @@ const withUser = async (comments) => await Promise.all(comments.map(async (comme
   }
 }));
 
+const remove = async (id, token, callback) => {
+  const user = await User.findByToken(token);
+  const comment = await findById(id);
+
+  if (!comment) return callback.onNotFound();
+  if (!user) return callback.onError('Invalid token');
+  if (User.isSameId(user, { _id: comment.user })) return await deleteById(id, callback);
+
+  return callback.onNotAllowed();
+}
+
+const deleteById = async (id, callback) => await CommentSchema.deleteOne({
+  _id: new ObjectId(id)
+}, error => error ? callback.onError(error) : callback.onDeleted());
+
 const findByPost = async (post) =>
   await CommentSchema.find({ post: new ObjectId(post._id) });
+
+const findById = async (id) => await CommentSchema.findOne({ _id: new ObjectId(id) });
 
 const serializeComment = (comment, user, post) => ({
   content: comment.content,
@@ -58,5 +75,6 @@ const hasRequiredFields = comment => Boolean(comment.content);
 
 module.exports = {
   store,
-  find
+  find,
+  remove
 }

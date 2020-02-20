@@ -98,6 +98,8 @@ const login = async (email, password, callback) => {
 
 const isSameToken = (user1, user2) => user1.token === user2.token;
 
+const isSameId = (user1, user2) => user1._id.toString() === user2._id.toString();
+
 const generateToken = ({ username, password, email }) =>
   encrypt(`email:${email}|username:${username}|password:${password}`);
 
@@ -187,5 +189,6 @@ module.exports = {
   login,
   follow,
   findByToken,
-  findById
+  findById,
+  isSameId
 }
