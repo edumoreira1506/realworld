@@ -20,6 +20,26 @@ const store = (req, res) => {
   });
 }
 
+const show = (req, res) => {
+  const { id } = req.params;
+
+  return Post.find(id, {
+    onFind: post => {
+      res.send({
+        ok: true,
+        post
+      }).status(200)
+    },
+    onNotFound: () => {
+      res.send({
+        ok: false,
+        message: 'Not found'
+      }).status(404)
+    }
+  });
+}
+
 module.exports = {
-  store
+  store,
+  show
 }

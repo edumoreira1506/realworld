@@ -18,5 +18,6 @@ routes.post('/auth', UserController.login)
 routes.post('/user/:id/follow', UserController.follow)
 
 routes.post('/post', PostController.store)
+routes.get('/post/:id', PostController.show)
 
 module.exports = routes
