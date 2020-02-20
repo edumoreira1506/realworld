@@ -1,9 +1,9 @@
 const express = require('express')
 
-const HelloController = require('../controllers/HelloController')
+const MainController = require('../controllers/MainController')
 
 const routes = express.Router()
 
-routes.get('/', HelloController.index)
+routes.get('/', MainController.index)
 
 module.exports = routes
