@@ -5,6 +5,9 @@
   "repository": "git@github.com:edumoreira1506/realworld.git",
   "author": "Eduardo Moreira <contato@eduardoem.com.br>",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon app"
+  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
