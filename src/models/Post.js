@@ -81,5 +81,6 @@ module.exports = {
   store,
   find,
   remove,
-  update
+  update,
+  findById
 }
