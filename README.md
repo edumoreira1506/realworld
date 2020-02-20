@@ -1,5 +1,7 @@
 # realworld-api
 
+[![Build Status](https://travis-ci.com/edumoreira1506/realworld-api.svg?branch=master)](https://travis-ci.com/edumoreira1506/realworld-api)
+
 ## Dependencies
 
 ```
