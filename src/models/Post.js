@@ -77,10 +77,40 @@ const persist = async (post, callback) =>
     error ? callback.onError(error) : callback.onStored(small)
   );
 
+const favorite = async (id, token, callback) => {
+  const post = await findById(id);
+  const user = await User.findByToken(token);
+
+  if (!post) return callback.onNotFound();
+  if (!user) return callback.onError('Invalid token');
+  if (User.isSameId(user, { _id: post.user })) return callback.onError('You cam not favorite yours posts');
+
+  const newProps = {
+    favorites:
+      alreadyFavorite(post, user)
+        ? removeFavorite(post.favorites, user._id)
+        : addFavorite(post.favorites, user._id)
+  }
+
+  return await editById(post.id, newProps, {
+    onError: callback.onError,
+    onUpdated: callback.onFavorited
+  });
+}
+
+const addFavorite = (favorites, user) => [ ...favorites, user ];
+
+const removeFavorite = (favorites, user) =>
+  favorites.filter(user => user.toString() != user);
+
+const alreadyFavorite = (post, user) =>
+  post.favorites.some(item => item.toString() == user._id);
+
 module.exports = {
   store,
   find,
   remove,
   update,
-  findById
+  findById,
+  favorite
 }
