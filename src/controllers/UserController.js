@@ -122,10 +122,37 @@ const login = (req, res) => {
   })
 }
 
+const follow = (req, res) => {
+  const { id } = req.params;
+  const token = req.header('Authorization');
+
+  return User.follow(id, token, {
+    onError: message => {
+      res.send({
+        ok: false,
+        message
+      }).status(400)
+    },
+    onNotFound: () => {
+      res.send({
+        ok: false,
+        message: 'Not found'
+      }).status(404)
+    },
+    onFollowed: () => {
+      res.send({
+        ok: true,
+        message: 'Success!'
+      }).status(201);
+    },
+  });
+}
+
 module.exports = {
   store,
   remove,
   show,
   update,
-  login
+  login,
+  follow
 }

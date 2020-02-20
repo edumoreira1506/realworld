@@ -23,7 +23,9 @@ const store = async (user, callback) => {
   const serializedUser = serializeUser({
     ...user,
     token: generateToken(user),
-    password: encrypt(user.password)
+    password: encrypt(user.password),
+    followers: [],
+    following: []
   });
 
   return persist(serializedUser, callback);
@@ -134,9 +136,9 @@ const isValidPassword = password => (
 );
 
 const serializeUser = ({
-  email, username, password, bio, image, token
+  email, username, password, bio, image, token, followers, following
 }) => ({
-  email, username, password, bio, image, token
+  email, username, password, bio, image, token, followers, following
 });
 
 const persist = async (user, callback) =>
@@ -148,10 +150,40 @@ const deleteById = async (id, callback) => await UserSchema.deleteOne({
   _id: new ObjectId(id)
 }, error => error ? callback.onError(error) : callback.onDeleted());
 
+const follow = async (id, token, callback) => {
+  const userId = await findById(id);
+  const userToken = await findByToken(token);
+
+  if (isSameToken(userId, userToken)) return callback.onError('You can not follow you')
+  if (!userId) return callback.onNotFound();
+  if (!userToken) return callback.onError('Invalid token');
+
+  const newProps = {
+    followers:
+      alreadyFollows(userToken, userId)
+        ? removeFollower(userId.followers, userToken._id)
+        : addFollower(userId.followers, userToken._id)
+  }
+
+  return await editById(userToken._id, newProps, {
+    onError: callback.onError,
+    onUpdated: callback.onFollowed
+  });
+}
+
+const addFollower = (followers, follower) => [ ...followers, follower ];
+
+const removeFollower = (followers, follower) =>
+  followers.filter(user => user.toString() != follower);
+
+const alreadyFollows = (follower, followed) =>
+  followed.followers.some(user => user.toString() == follower._id);
+
 module.exports = {
   store,
   remove,
   find,
   update,
-  login
+  login,
+  follow
 }
