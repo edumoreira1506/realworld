@@ -156,9 +156,9 @@ const follow = async (id, token, callback) => {
   const userId = await findById(id);
   const userToken = await findByToken(token);
 
-  if (isSameToken(userId, userToken)) return callback.onError('You can not follow you')
   if (!userId) return callback.onNotFound();
   if (!userToken) return callback.onError('Invalid token');
+  if (isSameToken(userId, userToken)) return callback.onError('You can not follow you')
 
   const newProps = {
     followers:

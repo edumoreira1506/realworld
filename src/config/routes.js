@@ -22,6 +22,8 @@ routes.get('/post/:id', PostController.show)
 routes.delete('/post/:id', PostController.remove)
 routes.patch('/post/:id', PostController.update)
 
+routes.post('/post/:id/favorite', PostController.favorite)
+
 routes.post('/post/:id/comment', CommentController.store)
 routes.get('/post/:id/comment', CommentController.show)
 

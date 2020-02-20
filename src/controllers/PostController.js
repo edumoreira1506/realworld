@@ -104,9 +104,36 @@ const update = (req, res) => {
   });
 }
 
+const favorite = (req, res) => {
+  const { id } = req.params;
+  const token = req.header('Authorization');
+
+  return Post.favorite(id, token, {
+    onError: message => {
+      res.send({
+        ok: false,
+        message
+      }).status(400)
+    },
+    onNotFound: () => {
+      res.send({
+        ok: false,
+        message: 'Not found'
+      }).status(404)
+    },
+    onFavorited: () => {
+      res.send({
+        ok: true,
+        message: 'Success!'
+      }).status(201);
+    },
+  });
+}
+
 module.exports = {
   store,
   show,
   remove,
-  update
+  update,
+  favorite
 }
