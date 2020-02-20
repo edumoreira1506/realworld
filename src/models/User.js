@@ -185,5 +185,6 @@ module.exports = {
   find,
   update,
   login,
-  follow
+  follow,
+  findByToken
 }
