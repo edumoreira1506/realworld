@@ -3,6 +3,7 @@ const express = require('express')
 const MainController = require('../controllers/MainController')
 const UserController = require('../controllers/UserController')
 const PostController = require('../controllers/PostController')
+const CommentController = require('../controllers/CommentController')
 
 const routes = express.Router()
 
@@ -20,5 +21,10 @@ routes.post('/post', PostController.store)
 routes.get('/post/:id', PostController.show)
 routes.delete('/post/:id', PostController.remove)
 routes.patch('/post/:id', PostController.update)
+
+routes.post('/post/:id/comment', CommentController.store)
+routes.get('/post/:id/comment', CommentController.show)
+
+routes.delete('/comment/:id', CommentController.remove)
 
 module.exports = routes
