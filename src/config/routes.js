@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 
 const MainController = require('../controllers/MainController')
 const UserController = require('../controllers/UserController')
@@ -6,6 +7,8 @@ const PostController = require('../controllers/PostController')
 const CommentController = require('../controllers/CommentController')
 
 const routes = express.Router()
+
+routes.all('*', cors());
 
 routes.get('/', MainController.index)
 
