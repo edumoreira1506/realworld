@@ -57,24 +57,40 @@ const find = async (id, callback) => {
   return callback.onNotFound();
 }
 
-const update = async (id, token, newProps, callback) => {
+const extractNewProps = (newProps, oldProps) => {
+  const keys = Object.keys(newProps);
+  const props = keys.reduce((props, key) => {
+    if (newProps[key] === oldProps[key]) {
+      return { ...props }
+    }
+
+    return { ...props, [key]: newProps[key] };
+  }, {});
+
+  return props;
+}
+
+const update = async (id, token, newPropsRequest, callback) => {
   const userToken = await findByToken(token);
   const userId = await findById(id);
 
   if (!userId) return callback.onNotFound();
   if (!userToken) return callback.onError('Invalid token');
+
+  const newProps = extractNewProps(newPropsRequest, userToken);
+
   if (isSameToken(userToken, userId)) {
     if (Object.prototype.hasOwnProperty.call(newProps, 'email'))
-      if (await isEmailDuplicated(newProps)) return callback.onError('Duplicated email');
+      if (await isEmailDuplicated(newProps.email)) return callback.onError('Duplicated email');
     
     if (Object.prototype.hasOwnProperty.call(newProps, 'username')) {
-      if (await isUsernameDuplicated(newProps)) return callback.onError('Duplicated username');
-      if (!isUsernameValid(newProps)) return callback.onError(`Username needs to have between ${usernameCharacters.min} and ${usernameCharacters.max} characters`);
+      if (await isUsernameDuplicated(newProps.username)) return callback.onError('Duplicated username');
+      if (!isUsernameValid(newProps.username)) return callback.onError(`Username needs to have between ${usernameCharacters.min} and ${usernameCharacters.max} characters`);
     }
 
     if (Object.prototype.hasOwnProperty.call(newProps, 'password')) {
       if (newProps.password !== newProps.confirmPassword) return callback.onError('Password and confirm password are differents');
-      if (!isValidPassword(newProps)) return callback.onError(`Password must have between ${passwordCharacters.min} and ${passwordCharacters.max}, a number and a uppercase letter`);
+      if (!isValidPassword(newProps.password)) return callback.onError(`Password must have between ${passwordCharacters.min} and ${passwordCharacters.max}, a number and a uppercase letter`);
     }
 
     return await editById(id, newProps, callback);
