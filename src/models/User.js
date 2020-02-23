@@ -53,7 +53,8 @@ const find = async (id, callback) => {
     image: user.image,
     bio: user.bio,
     updatedAt: user.updatedAt,
-    createdAt: user.createdAt
+    createdAt: user.createdAt,
+    id: user._id
   })
 
   return callback.onNotFound();
