@@ -42,8 +42,10 @@ const remove = async (id, token, callback) => {
   return callback.onNotAllowed();
 }
 
+const isId = string => string.length >= 23;
+
 const find = async (id, callback) => {
-  const user = await findById(id);
+  const user = isId(id) ? await findById(id) : await findByUsername(id);
 
   if (user) return callback.onFind({
     email: user.email,
