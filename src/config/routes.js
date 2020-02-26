@@ -18,6 +18,8 @@ routes.delete('/user/:id', UserController.remove)
 routes.patch('/user/:id', UserController.update)
 routes.post('/user/:id/follow', UserController.follow)
 
+routes.get('/user/:id/posts', PostController.byUser);
+
 routes.post('/auth', UserController.login)
 
 routes.post('/post', PostController.store)
