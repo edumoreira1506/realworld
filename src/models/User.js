@@ -209,5 +209,7 @@ module.exports = {
   follow,
   findByToken,
   findById,
-  isSameId
+  isSameId,
+  isId,
+  findByUsername
 }

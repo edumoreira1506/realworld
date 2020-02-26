@@ -108,18 +108,18 @@ const alreadyFavorite = (post, user) =>
 
 const byUser = async (userId, callback) => {
   if (!userId) return callback.onNotFound();
-  
-  const user = await User.findById(userId);
+
+  const user = User.isId(userId) ? await User.findById(userId) : await User.findByUsername(userId);
 
   if (!user) return callback.onNotFound();
 
-  const posts = await findByUser(userId);
+  const posts = await findByUser(user);
 
   return callback.onFind(posts);
 }
 
-const findByUser = async (userId) =>
-  await PostSchema.find({ user: new ObjectId(userId) });
+const findByUser = async (user) =>
+  await PostSchema.find({ user: new ObjectId(user._id) });
 
 module.exports = {
   store,
