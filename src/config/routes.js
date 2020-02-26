@@ -5,6 +5,7 @@ const MainController = require('../controllers/MainController')
 const UserController = require('../controllers/UserController')
 const PostController = require('../controllers/PostController')
 const CommentController = require('../controllers/CommentController')
+const TimeLineController = require('../controllers/TimeLineController')
 
 const routes = express.Router()
 
@@ -18,7 +19,9 @@ routes.delete('/user/:id', UserController.remove)
 routes.patch('/user/:id', UserController.update)
 routes.post('/user/:id/follow', UserController.follow)
 
-routes.get('/user/:id/posts', PostController.byUser);
+routes.get('/user/:id/posts', PostController.byUser)
+
+routes.get('/user/:id/time_line', TimeLineController.show)
 
 routes.post('/auth', UserController.login)
 
