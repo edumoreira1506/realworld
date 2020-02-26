@@ -7,7 +7,7 @@ const byUser = async (user) =>
       { user: new ObjectId(user._id) },
       { user: { $in: user.following } }
     ]
-  })
+  }).sort({ createdAt: 'desc' })
 
 module.exports = {
   byUser
