@@ -1,6 +1,7 @@
 const UserSchema = require('../schemas/UserSchema');
 const { hasNumber, hasUpperCase, encrypt, decrypt } = require('../helpers/string');
 const ObjectId = require('mongoose').Types.ObjectId;
+const Post = require('./Post');
 
 const usernameCharacters = {
   min: 5,
@@ -200,6 +201,32 @@ const removeFollower = (followers, follower) =>
 const alreadyFollows = (follower, followed) =>
   followed.followers.some(user => user.toString() == follower._id);
 
+const getTimeLine = async (id, callback) => {
+  const user = await findById(id);
+
+  if (!user) return callback.onNotFound();
+
+  const posts = await Post.getTimeLine(user);
+  const postsWithUser = await Promise.all(posts.map(async (post) => {
+    const user = await findById(post.user);
+
+    return {
+      id: post.id,
+      content: post.content,
+      title: post.title,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+      favorites: post.favorites,
+      user: {
+        username: user.username,
+        image: user.image
+      }
+    }
+  }))
+
+  return callback.onFound(postsWithUser);
+}
+
 module.exports = {
   store,
   remove,
@@ -211,5 +238,6 @@ module.exports = {
   findById,
   isSameId,
   isId,
-  findByUsername
+  findByUsername,
+  getTimeLine
 }

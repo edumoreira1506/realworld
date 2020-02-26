@@ -127,6 +127,14 @@ const byUser = async (userId, callback) => {
 const findByUser = async (user) =>
   await PostSchema.find({ user: new ObjectId(user._id) });
 
+const getTimeLine = async (user) =>
+  await PostSchema.find({
+    $or: [
+      { user: new ObjectId(user._id) },
+      { user: { $in: user.following } }
+    ]
+  })
+
 module.exports = {
   store,
   find,
@@ -134,5 +142,6 @@ module.exports = {
   update,
   findById,
   favorite,
-  byUser
+  byUser,
+  getTimeLine
 }
