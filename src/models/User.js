@@ -1,7 +1,7 @@
 const UserSchema = require('../schemas/UserSchema');
 const { hasNumber, hasUpperCase, encrypt, decrypt } = require('../helpers/string');
 const ObjectId = require('mongoose').Types.ObjectId;
-const Post = require('./Post');
+const TimeLine = require('./TimeLine');
 
 const usernameCharacters = {
   min: 5,
@@ -206,12 +206,12 @@ const getTimeLine = async (id, callback) => {
 
   if (!user) return callback.onNotFound();
 
-  const posts = await Post.getTimeLine(user);
+  const posts = await TimeLine.byUser(user);
   const postsWithUser = await Promise.all(posts.map(async (post) => {
     const user = await findById(post.user);
 
     return {
-      id: post.id,
+      _id: post._id,
       content: post.content,
       title: post.title,
       createdAt: post.createdAt,
