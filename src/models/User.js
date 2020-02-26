@@ -25,7 +25,6 @@ const store = async (user, callback) => {
     ...user,
     token: generateToken(user),
     password: encrypt(user.password),
-    followers: [],
     following: []
   });
 
@@ -142,7 +141,7 @@ const findById = async (id) => await UserSchema.findOne({ _id: new ObjectId(id) 
 
 const editById = async (id, newProps, callback) => await UserSchema.updateOne({
   _id: new ObjectId(id)
-}, newProps, error => 
+}, newProps, error =>
   error ? callback.onError(error) : callback.onUpdated()
 );
 
@@ -158,9 +157,9 @@ const isValidPassword = password => (
 );
 
 const serializeUser = ({
-  email, username, password, bio, image, token, followers, following
+  email, username, password, bio, image, token, following
 }) => ({
-  email, username, password, bio, image, token, followers, following
+  email, username, password, bio, image, token, following
 });
 
 const persist = async (user, callback) =>
@@ -181,10 +180,10 @@ const follow = async (id, token, callback) => {
   if (isSameToken(userId, userToken)) return callback.onError('You can not follow you')
 
   const newProps = {
-    followers:
+    following:
       alreadyFollows(userToken, userId)
-        ? removeFollower(userId.followers, userToken._id)
-        : addFollower(userId.followers, userToken._id)
+        ? removeFollower(userToken.following, userId._id)
+        : addFollower(userToken.following, userId._id)
   }
 
   return await editById(userToken._id, newProps, {
@@ -193,13 +192,13 @@ const follow = async (id, token, callback) => {
   });
 }
 
-const addFollower = (followers, follower) => [ ...followers, follower ];
+const addFollower = (following, follower) => [ ...following, follower ];
 
-const removeFollower = (followers, follower) =>
-  followers.filter(user => user.toString() != follower);
+const removeFollower = (following, follower) =>
+  following.filter(user => user.toString() != follower.toString());
 
 const alreadyFollows = (follower, followed) =>
-  followed.followers.some(user => user.toString() == follower._id);
+  follower.following.some(user => user.toString() == followed._id.toString());
 
 const getTimeLine = async (id, callback) => {
   const user = await findById(id);
@@ -208,7 +207,7 @@ const getTimeLine = async (id, callback) => {
 
   const posts = await TimeLine.byUser(user);
   const postsWithUser = await Promise.all(posts.map(async (post) => {
-    const user = await findById(post.user);
+    const { username, image } = await findById(post.user);
 
     return {
       _id: post._id,
@@ -218,8 +217,8 @@ const getTimeLine = async (id, callback) => {
       updatedAt: post.updatedAt,
       favorites: post.favorites,
       user: {
-        username: user.username,
-        image: user.image
+        username,
+        image
       }
     }
   }))
