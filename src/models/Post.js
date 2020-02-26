@@ -106,11 +106,27 @@ const removeFavorite = (favorites, user) =>
 const alreadyFavorite = (post, user) =>
   post.favorites.some(item => item.toString() == user._id);
 
+const byUser = async (userId, callback) => {
+  if (!userId) return callback.onNotFound();
+  
+  const user = await User.findById(userId);
+
+  if (!user) return callback.onNotFound();
+
+  const posts = await findByUser(userId);
+
+  return callback.onFind(posts);
+}
+
+const findByUser = async (userId) =>
+  await PostSchema.find({ user: new ObjectId(userId) });
+
 module.exports = {
   store,
   find,
   remove,
   update,
   findById,
-  favorite
+  favorite,
+  byUser
 }

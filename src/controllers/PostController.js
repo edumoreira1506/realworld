@@ -130,10 +130,30 @@ const favorite = (req, res) => {
   });
 }
 
+const byUser = (req, res) => {
+  const { id } = req.params;
+
+  return Post.byUser(id, {
+    onFind: posts => {
+      res.send({
+        ok: true,
+        posts
+      }).status(200)
+    },
+    onNotFound: () => {
+      res.send({
+        ok: false,
+        message: 'Not found'
+      }).status(404)
+    }
+  })
+}
+
 module.exports = {
   store,
   show,
   remove,
   update,
-  favorite
+  favorite,
+  byUser
 }
