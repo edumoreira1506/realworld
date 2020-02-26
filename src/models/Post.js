@@ -16,14 +16,20 @@ const store = async (token, post, callback) => {
 const find = async (id, callback) => {
   const post = await findById(id);
 
-  if (post) return callback.onFind({
+  if (!post) return callback.onNotFound();
+
+  const user = await User.findById(post.user);
+
+  return callback.onFind({
     title: post.title,
     content: post.content,
     updatedAt: post.updatedAt,
-    createdAt: post.createdAt
+    createdAt: post.createdAt,
+    user: {
+      image: user.image,
+      username: user.username
+    }
   });
-
-  return callback.onNotFound();
 }
 
 const remove = async (id, token, callback) => {
