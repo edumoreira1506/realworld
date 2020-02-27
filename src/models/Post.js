@@ -127,6 +127,21 @@ const byUser = async (userId, callback) => {
 const findByUser = async (user) =>
   await PostSchema.find({ user: new ObjectId(user._id) });
 
+const favoritesByUser = async (userId, callback) => {
+  if (!userId) return callback.onNotFound();
+
+  const user = User.isId(userId) ? await User.findById(userId) : await User.findByUsername(userId);
+
+  if (!user) return callback.onNotFound();
+
+  const posts = await findFavorites(user);
+
+  return callback.onFind(posts);
+}
+
+const findFavorites = async (user) =>
+  await PostSchema.find({ favorites: user._id });
+
 module.exports = {
   store,
   find,
@@ -134,5 +149,6 @@ module.exports = {
   update,
   findById,
   favorite,
-  byUser
+  byUser,
+  favoritesByUser
 }
