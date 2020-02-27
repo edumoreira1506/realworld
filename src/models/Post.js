@@ -107,7 +107,7 @@ const favorite = async (id, token, callback) => {
 const addFavorite = (favorites, user) => [ ...favorites, user ];
 
 const removeFavorite = (favorites, user) =>
-  favorites.filter(user => user.toString() != user);
+  favorites.filter(item => user.toString() != item);
 
 const alreadyFavorite = (post, user) =>
   post.favorites.some(item => item.toString() == user._id);
@@ -120,8 +120,20 @@ const byUser = async (userId, callback) => {
   if (!user) return callback.onNotFound();
 
   const posts = await findByUser(user);
+  const postsWithUser = posts.map(post => ({
+    title: post.title,
+    content: post.content,
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
+    favorites: post.favorites,
+    _id: post._id,
+    user: {
+      image: user.image,
+      username: user.username
+    }
+  }))
 
-  return callback.onFind(posts);
+  return callback.onFind(postsWithUser);
 }
 
 const findByUser = async (user) =>
@@ -135,8 +147,24 @@ const favoritesByUser = async (userId, callback) => {
   if (!user) return callback.onNotFound();
 
   const posts = await findFavorites(user);
+  const postsWithUser = await Promise.all(posts.map(async (post) => {
+    const userOfPost = await User.findById(post.user);
 
-  return callback.onFind(posts);
+    return {
+      title: post.title,
+      content: post.content,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+      favorites: post.favorites,
+      _id: post._id,
+      user: {
+        image: userOfPost.image,
+        username: userOfPost.username
+      }
+    }
+  }));
+
+  return callback.onFind(postsWithUser);
 }
 
 const findFavorites = async (user) =>
