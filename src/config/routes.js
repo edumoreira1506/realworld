@@ -20,6 +20,7 @@ routes.patch('/user/:id', UserController.update)
 routes.post('/user/:id/follow', UserController.follow)
 
 routes.get('/user/:id/posts', PostController.byUser)
+routes.get('/user/:id/posts_favorites', PostController.favoritesByUser)
 
 routes.get('/user/:id/time_line', TimeLineController.show)
 
