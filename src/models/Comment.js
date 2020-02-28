@@ -56,7 +56,7 @@ const deleteById = async (id, callback) => await CommentSchema.deleteOne({
 }, error => error ? callback.onError(error) : callback.onDeleted());
 
 const findByPost = async (post) =>
-  await CommentSchema.find({ post: new ObjectId(post._id) });
+  await CommentSchema.find({ post: new ObjectId(post._id) }).sort({ createdAt: 'desc' });
 
 const findById = async (id) => await CommentSchema.findOne({ _id: new ObjectId(id) });
 
