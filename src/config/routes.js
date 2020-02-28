@@ -15,6 +15,7 @@ routes.get('/', MainController.index)
 
 routes.post('/user', UserController.store)
 routes.get('/user/:id', UserController.show)
+routes.get('/user', UserController.search)
 routes.delete('/user/:id', UserController.remove)
 routes.patch('/user/:id', UserController.update)
 routes.post('/user/:id/follow', UserController.follow)

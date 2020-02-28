@@ -70,6 +70,19 @@ const show = (req, res) => {
   });
 }
 
+const search = (req, res) => {
+  const { keyWord } = req.query;
+
+  return User.search(keyWord, {
+    onFind: user => {
+      res.send({
+        ok: true,
+        user
+      }).status(200)
+    }
+  });
+}
+
 const update = (req, res) => {
   const { id } = req.params;
   const token = req.header('Authorization');
@@ -154,5 +167,6 @@ module.exports = {
   show,
   update,
   login,
-  follow
+  follow,
+  search
 }

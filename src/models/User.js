@@ -226,6 +226,24 @@ const getTimeLine = async (id, callback) => {
   return callback.onFound(postsWithUser);
 }
 
+const searchByUsername = async (keyWord) => await UserSchema.find({
+  username : { $regex : `.*${keyWord}.*` }
+});
+
+const search = async (keyWord, callback) => {
+  const users = await searchByUsername(keyWord);
+
+  return callback.onFind(users.map(user => ({
+    email: user.email,
+    username: user.username,
+    image: user.image,
+    bio: user.bio,
+    updatedAt: user.updatedAt,
+    createdAt: user.createdAt,
+    id: user._id
+  })));
+}
+
 module.exports = {
   store,
   remove,
@@ -238,5 +256,6 @@ module.exports = {
   isSameId,
   isId,
   findByUsername,
-  getTimeLine
+  getTimeLine,
+  search
 }
